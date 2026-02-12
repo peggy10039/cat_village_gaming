@@ -30,6 +30,20 @@
   };
 
   const STORAGE_KEY = "cat-village-rpg-save-v1";
+  const FIRST_VISIT_KEY = "cat-village-rpg-first-visit-v1";
+
+  // 支援用網址參數強制重置：index.html?reset=1
+  // 會清空存檔與「首次進來」旗標，並把網址還原（避免每次刷新都重置）
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("reset")) {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(FIRST_VISIT_KEY);
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  } catch {
+    // ignore
+  }
 
   /** @typedef {{ id: string; name: string; desc: string; from: string; time: number }} Gift */
   /** @typedef {{ gifts: Gift[]; givenNpcIds: Record<string, boolean> }} SaveData */
@@ -56,6 +70,14 @@
   }
 
   let save = loadSave();
+
+  function hardReset() {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(FIRST_VISIT_KEY);
+    // 清掉按鍵狀態，避免重整前卡鍵
+    keys.clear();
+    window.location.reload();
+  }
 
   function updateGiftBadge() {
     ui.badgeGifts.textContent = `禮物：${save.gifts.length}`;
@@ -291,10 +313,16 @@
     return img;
   }
 
+  /** 玩家圖示（sprite） */
+  const PLAYER_SPRITE_SRC = "./assets/user/user01.png";
+  const PLAYER_SPRITE_SCALE = 2.2;
+
   // 預先載入所有 NPC 圖示
   for (const npc of npcs) {
     if (npc.spriteSrc) getSprite(npc.spriteSrc);
   }
+  // 預先載入玩家圖示
+  getSprite(PLAYER_SPRITE_SRC);
 
   /** 對話系統 */
   const dialogue = {
@@ -431,6 +459,13 @@
     if (k === "h" || k === "H") {
       if (dialogue.active) return;
       toggleHelp();
+      return;
+    }
+
+    // 重置：Shift+R（清空存檔並重新開始）
+    if (k === "R") {
+      if (dialogue.active) return;
+      hardReset();
       return;
     }
 
@@ -698,6 +733,22 @@
     ctx.ellipse(player.x + player.w / 2, player.y + player.h + 6, 16, 9, 0, 0, Math.PI * 2);
     ctx.fill();
 
+    // 玩家圖片圖示（像素風：關閉平滑）
+    {
+      const img = getSprite(PLAYER_SPRITE_SRC);
+      if (img.complete && img.naturalWidth > 0) {
+        const prevSmoothing = ctx.imageSmoothingEnabled;
+        ctx.imageSmoothingEnabled = false;
+        const size = Math.max(player.w, player.h) * PLAYER_SPRITE_SCALE;
+        const dx = player.x + player.w / 2 - size / 2;
+        const dy = player.y + player.h - size; // 讓圖片底部貼近「腳底」
+        ctx.drawImage(img, dx, dy, size, size);
+        ctx.imageSmoothingEnabled = prevSmoothing;
+        ctx.restore();
+        return;
+      }
+    }
+
     // 身體
     const bodyGrad = ctx.createLinearGradient(player.x, player.y, player.x, player.y + player.h);
     bodyGrad.addColorStop(0, "rgba(124,226,255,.95)");
@@ -858,10 +909,9 @@
   closeOverlays();
 
   // 小提示：首次進來自動開說明
-  const firstVisitKey = "cat-village-rpg-first-visit-v1";
-  const seen = localStorage.getItem(firstVisitKey) === "1";
+  const seen = localStorage.getItem(FIRST_VISIT_KEY) === "1";
   if (!seen) {
-    localStorage.setItem(firstVisitKey, "1");
+    localStorage.setItem(FIRST_VISIT_KEY, "1");
     openHelp();
   }
 
