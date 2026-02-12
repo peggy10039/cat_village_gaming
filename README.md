@@ -22,10 +22,5 @@
 - `styles.css`：介面與視覺樣式
 - `game.js`：遊戲邏輯（地圖/碰撞/玩家/貓咪 NPC/對話/背包）
 
-## 下一步可以擴充（如果你想）
-
-- 任務系統（幫某隻貓收集特定「毛/鬍鬚」）
-- 商店與交換（用禮物換裝備或家具）
-- 房屋進出（室內地圖、事件觸發）
-- 更多區域（森林、海邊、夜市）
+you can see it on website : https://peggy10039.github.io/cat_village_gaming/index.html
 
