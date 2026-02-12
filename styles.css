@@ -1,0 +1,269 @@
+:root{
+  --bg0:#0b1020;
+  --bg1:#0f1630;
+  --card: rgba(255,255,255,.08);
+  --card2: rgba(255,255,255,.12);
+  --text:#eaf0ff;
+  --muted:#b7c3e9;
+  --accent:#7ce2ff;
+  --accent2:#a6ffcb;
+  --danger:#ff6b88;
+  --shadow: 0 18px 60px rgba(0,0,0,.45);
+  --radius: 16px;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Arial, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(1200px 700px at 20% 0%, rgba(124,226,255,.22), transparent 60%),
+    radial-gradient(900px 600px at 85% 15%, rgba(166,255,203,.16), transparent 55%),
+    radial-gradient(1200px 700px at 55% 110%, rgba(255,107,136,.14), transparent 60%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
+}
+
+.app{
+  min-height:100%;
+  display:flex;
+  flex-direction:column;
+}
+
+.topbar{
+  display:flex;
+  gap:16px;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(10px);
+  background: rgba(12, 18, 38, .45);
+}
+
+.title__main{
+  font-weight:800;
+  letter-spacing:.5px;
+  font-size:16px;
+}
+.title__sub{
+  margin-top:2px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.chips{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+.chip{
+  font-size:12px;
+  padding:6px 10px;
+  border-radius:999px;
+  background: rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.10);
+  color:var(--muted);
+}
+
+.stage{
+  position:relative;
+  width:min(960px, calc(100vw - 24px));
+  margin:18px auto;
+  flex:1;
+}
+
+canvas#game{
+  width:100%;
+  height:auto;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display:block;
+  border:1px solid rgba(255,255,255,.12);
+  background: #081027;
+}
+
+.hud{
+  position:absolute;
+  inset: 12px 12px auto 12px;
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  pointer-events:none;
+}
+.hud__left,.hud__right{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.10);
+  color:var(--muted);
+  width:max-content;
+  max-width:min(520px, calc(100vw - 60px));
+}
+
+.prompt{
+  position:absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display:flex;
+  gap:10px;
+  align-items:center;
+  padding:10px 12px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.15);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 16px 40px rgba(0,0,0,.35);
+  pointer-events:none;
+}
+.prompt[aria-hidden="true"]{display:none}
+.prompt__key{
+  min-width:52px;
+  text-align:center;
+  font-weight:800;
+  padding:6px 10px;
+  border-radius: 10px;
+  background: rgba(124,226,255,.16);
+  border: 1px solid rgba(124,226,255,.35);
+  color: var(--text);
+}
+.prompt__text{color:var(--text); font-size:13px}
+
+.dialogue{
+  position:absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  padding:14px 14px 12px 14px;
+  border-radius: var(--radius);
+  background: rgba(10, 14, 28, .78);
+  border:1px solid rgba(255,255,255,.14);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+.dialogue[aria-hidden="true"]{display:none}
+.dialogue__name{
+  font-weight:900;
+  letter-spacing:.5px;
+  color: var(--accent);
+  margin-bottom:6px;
+}
+.dialogue__text{
+  font-size:14px;
+  line-height:1.55;
+  color:var(--text);
+  min-height: 44px;
+}
+.dialogue__footer{
+  margin-top:10px;
+  display:flex;
+  justify-content:flex-end;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.inventory, .help{
+  position:absolute;
+  top: 16px;
+  right: 16px;
+  width: min(420px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  display:flex;
+  flex-direction:column;
+  border-radius: var(--radius);
+  background: rgba(10, 14, 28, .85);
+  border:1px solid rgba(255,255,255,.14);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+.inventory[aria-hidden="true"], .help[aria-hidden="true"]{display:none}
+.inventory__header, .help__header{
+  padding:12px 12px 10px 12px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+}
+.inventory__title, .help__title{font-weight:900; letter-spacing:.4px}
+.inventory__close, .help__close{
+  appearance:none;
+  border:none;
+  background: rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);
+  color: var(--text);
+  padding:8px 10px;
+  border-radius: 12px;
+  cursor:pointer;
+}
+.inventory__close:hover, .help__close:hover{background: rgba(255,255,255,.12)}
+.inventory__body, .help__body{
+  padding:12px;
+  overflow:auto;
+}
+.inventory__meta{
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:10px;
+}
+.inventory__list{
+  list-style:none;
+  padding:0;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.inventory__item{
+  padding:10px 10px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.10);
+}
+.inventory__itemName{font-weight:800; margin-bottom:2px}
+.inventory__itemDesc{font-size:12px; color:var(--muted); line-height:1.45}
+.inventory__footer{
+  padding:12px;
+  border-top:1px solid rgba(255,255,255,.10);
+  display:flex;
+  justify-content:flex-end;
+}
+.btn{
+  appearance:none;
+  border:none;
+  cursor:pointer;
+  padding:10px 12px;
+  border-radius: 14px;
+  background: rgba(255,107,136,.14);
+  border: 1px solid rgba(255,107,136,.35);
+  color: var(--text);
+  font-weight:800;
+}
+.btn:hover{background: rgba(255,107,136,.18)}
+
+.help__list{
+  margin:0;
+  padding-left: 18px;
+  color: var(--text);
+  line-height:1.7;
+}
+.help__note{
+  margin:12px 0 0 0;
+  color: var(--muted);
+  font-size:12px;
+  line-height:1.55;
+}
+
+.footer{
+  padding: 10px 18px 16px 18px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align:center;
+  opacity:.95;
+}

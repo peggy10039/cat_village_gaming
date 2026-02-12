@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>貓咪村莊 RPG（原型）</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="title">
+          <div class="title__main">貓咪村莊 RPG</div>
+          <div class="title__sub">方向鍵移動・靠近按空白鍵對話・I 開背包</div>
+        </div>
+        <div class="chips" aria-label="狀態提示">
+          <span class="chip" id="chip-help">H：說明</span>
+          <span class="chip" id="chip-inv">I：背包</span>
+          <span class="chip" id="chip-interact">Space：互動</span>
+        </div>
+      </header>
+
+      <main class="stage" role="application" aria-label="遊戲畫面">
+        <canvas id="game" width="960" height="540"></canvas>
+
+        <section class="hud" aria-label="HUD">
+          <div class="hud__left">
+            <div class="badge" id="badge-location">地點：貓咪村莊</div>
+            <div class="badge" id="badge-hint">提示：靠近 NPC 會出現「可互動」</div>
+          </div>
+          <div class="hud__right">
+            <div class="badge" id="badge-gifts">禮物：0</div>
+          </div>
+        </section>
+
+        <section class="prompt" id="prompt" aria-live="polite" aria-hidden="true">
+          <div class="prompt__key">Space</div>
+          <div class="prompt__text" id="prompt-text">與 NPC 對話</div>
+        </section>
+
+        <section class="dialogue" id="dialogue" aria-live="polite" aria-hidden="true">
+          <div class="dialogue__name" id="dialogue-name">NPC</div>
+          <div class="dialogue__text" id="dialogue-text">……</div>
+          <div class="dialogue__footer">
+            <div class="dialogue__hint" id="dialogue-hint">空白鍵 / Enter：下一句　Esc：關閉</div>
+          </div>
+        </section>
+
+        <aside class="inventory" id="inventory" aria-hidden="true" aria-label="背包">
+          <div class="inventory__header">
+            <div class="inventory__title">背包</div>
+            <button class="inventory__close" id="inventory-close" type="button">關閉（I / Esc）</button>
+          </div>
+          <div class="inventory__body">
+            <div class="inventory__meta" id="inventory-meta">目前沒有禮物。</div>
+            <ul class="inventory__list" id="inventory-list"></ul>
+          </div>
+          <div class="inventory__footer">
+            <button class="btn" id="inventory-clear" type="button" title="清除存檔（localStorage）">
+              重新開始（清空背包）
+            </button>
+          </div>
+        </aside>
+
+        <aside class="help" id="help" aria-hidden="true" aria-label="操作說明">
+          <div class="help__header">
+            <div class="help__title">操作說明</div>
+            <button class="help__close" id="help-close" type="button">關閉（H / Esc）</button>
+          </div>
+          <div class="help__body">
+            <ul class="help__list">
+              <li><b>移動</b>：方向鍵（↑↓←→）</li>
+              <li><b>互動</b>：靠近貓咪 NPC 後按 <b>空白鍵</b>（或 Enter）</li>
+              <li><b>背包</b>：按 <b>I</b> 開關背包</li>
+              <li><b>關閉視窗</b>：按 <b>Esc</b></li>
+            </ul>
+            <p class="help__note">
+              這是可玩的原型：地圖、碰撞、對話、一次性禮物與背包存檔都已具備。
+            </p>
+          </div>
+        </aside>
+      </main>
+
+      <footer class="footer">
+        <span>做給你的小原型｜下一步可以加：任務、商店、房屋進出、事件觸發、更多地圖。</span>
+      </footer>
+    </div>
+
+    <script src="./game.js"></script>
+  </body>
+</html>
