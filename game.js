@@ -314,15 +314,22 @@
   }
 
   /** 玩家圖示（sprite） */
-  const PLAYER_SPRITE_SRC = "./assets/user/user01.png";
+  const PLAYER_SPRITE_RIGHT_SRC = "./assets/user/user_right.png";
+  const PLAYER_SPRITE_LEFT_SRC = "./assets/user/user_left.png";
   const PLAYER_SPRITE_SCALE = 2.2;
+
+  function getPlayerSpriteSrc() {
+    // 需求：按左用 user_left、按右用 user_right；預設/其他方向都用 user_right
+    return player.facing === "left" ? PLAYER_SPRITE_LEFT_SRC : PLAYER_SPRITE_RIGHT_SRC;
+  }
 
   // 預先載入所有 NPC 圖示
   for (const npc of npcs) {
     if (npc.spriteSrc) getSprite(npc.spriteSrc);
   }
   // 預先載入玩家圖示
-  getSprite(PLAYER_SPRITE_SRC);
+  getSprite(PLAYER_SPRITE_RIGHT_SRC);
+  getSprite(PLAYER_SPRITE_LEFT_SRC);
 
   /** 對話系統 */
   const dialogue = {
@@ -735,7 +742,7 @@
 
     // 玩家圖片圖示（像素風：關閉平滑）
     {
-      const img = getSprite(PLAYER_SPRITE_SRC);
+      const img = getSprite(getPlayerSpriteSrc());
       if (img.complete && img.naturalWidth > 0) {
         const prevSmoothing = ctx.imageSmoothingEnabled;
         ctx.imageSmoothingEnabled = false;
