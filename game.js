@@ -183,14 +183,15 @@
   /** 玩家 */
   const player = {
     x: 520,
-    y: 900,
+    // 避免一開始就卡在柵欄碰撞盒（solids 裡 y: 880~920）
+    y: 940,
     w: 28,
     h: 34,
     speed: 240, // px/s
     facing: /** @type {"up"|"down"|"left"|"right"} */ ("down"),
   };
 
-  /** @typedef {{ id:string; name:string; x:number; y:number; r:number; palette: {base:string; spot:string}; dialogue: string[]; gift: { name:string; desc:string } }} Npc */
+  /** @typedef {{ id:string; name:string; x:number; y:number; r:number; palette: {base:string; spot:string}; spriteSrc?: string; spriteScale?: number; dialogue: string[]; gift: { name:string; desc:string } }} Npc */
   /** @type {Npc[]} */
   const npcs = [
     {
@@ -200,6 +201,8 @@
       y: 460,
       r: 22,
       palette: { base: "#ffb057", spot: "#fff2de" },
+      spriteSrc: "./assets/npcs/orange_cat.png",
+      spriteScale: 1.45,
       dialogue: [
         "喵！歡迎來到貓咪村莊～今天的風很舒服吧？",
         "我在收集陽光曬過的毛毛，聞起來像餅乾。",
@@ -214,6 +217,8 @@
       y: 470,
       r: 22,
       palette: { base: "#1c2136", spot: "#4a5380" },
+      spriteSrc: "./assets/npcs/black_cat.png",
+      spriteScale: 1.45,
       dialogue: [
         "……（你感覺到一股沉穩的氣場）",
         "別怕，我只是走路很安靜。",
@@ -228,6 +233,8 @@
       y: 510,
       r: 22,
       palette: { base: "#f4d7c8", spot: "#c86f62" },
+      spriteSrc: "./assets/npcs/flower_cat.png",
+      spriteScale: 1.45,
       dialogue: [
         "嘿～旅人！你看得出我今天是哪一種心情花色嗎？",
         "我把甜甜的故事藏在尾巴裡。",
@@ -242,6 +249,8 @@
       y: 860,
       r: 22,
       palette: { base: "#f5fbff", spot: "#cbe6ff" },
+      spriteSrc: "./assets/npcs/white_cat.png",
+      spriteScale: 1.45,
       dialogue: [
         "喵～你走路的節奏很溫柔。",
         "村莊有些地方不能踩進去喔（像水池跟房子）。",
@@ -256,6 +265,8 @@
       y: 860,
       r: 22,
       palette: { base: "#caa36b", spot: "#6d4b2f" },
+      spriteSrc: "./assets/npcs/tiger_cat.png",
+      spriteScale: 1.45,
       dialogue: [
         "看好腳步，方向鍵要穩，轉向要果斷。",
         "靠近我時，空白鍵能打開話匣子（也能打開你的勇氣）。",
@@ -264,6 +275,26 @@
       gift: { name: "虎斑師傅的練功毛", desc: "硬挺又有彈性，像是在說：再走一步。" },
     },
   ];
+
+  /** NPC 圖示（sprite） */
+  /** @type {Map<string, HTMLImageElement>} */
+  const spriteCache = new Map();
+  /** @param {string} src */
+  function getSprite(src) {
+    const cached = spriteCache.get(src);
+    if (cached) return cached;
+    const img = new Image();
+    img.decoding = "async";
+    img.loading = "eager";
+    img.src = src;
+    spriteCache.set(src, img);
+    return img;
+  }
+
+  // 預先載入所有 NPC 圖示
+  for (const npc of npcs) {
+    if (npc.spriteSrc) getSprite(npc.spriteSrc);
+  }
 
   /** 對話系統 */
   const dialogue = {
@@ -580,6 +611,30 @@
     ctx.beginPath();
     ctx.ellipse(npc.x, npc.y + 18, npc.r * 0.9, npc.r * 0.55, 0, 0, Math.PI * 2);
     ctx.fill();
+
+    // 優先用圖片圖示（像素風：關閉平滑）
+    if (npc.spriteSrc) {
+      const img = getSprite(npc.spriteSrc);
+      if (img.complete && img.naturalWidth > 0) {
+        const prevSmoothing = ctx.imageSmoothingEnabled;
+        ctx.imageSmoothingEnabled = false;
+        const scale = npc.spriteScale ?? 1.45;
+        const size = npc.r * 2 * scale; // 以直徑為基準縮放
+        const dx = npc.x - size / 2;
+        const dy = npc.y + npc.r - size; // 讓圖片底部貼近「腳底」
+        ctx.drawImage(img, dx, dy, size, size);
+        ctx.imageSmoothingEnabled = prevSmoothing;
+        // 名牌（靠近時顯示）
+        const near = getNearestNpcWithin(72);
+        if (near && near.id === npc.id && !dialogue.active) {
+          const given = !!save.givenNpcIds[npc.id];
+          const label = given ? `${npc.name}（已收禮）` : npc.name;
+          drawNameTag(npc.x, npc.y - npc.r - 18, label);
+        }
+        ctx.restore();
+        return;
+      }
+    }
 
     // 身體
     ctx.fillStyle = npc.palette.base;
