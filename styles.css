@@ -106,6 +106,12 @@ canvas#game{
   max-width:min(520px, calc(100vw - 60px));
 }
 
+.badge--danger{
+  background: rgba(255,107,136,.14);
+  border-color: rgba(255,107,136,.35);
+  color: var(--text);
+}
+
 .prompt{
   position:absolute;
   left: 50%;

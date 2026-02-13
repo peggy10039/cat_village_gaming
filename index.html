@@ -30,6 +30,8 @@
             <div class="badge" id="badge-hint">提示：靠近 NPC 會出現「可互動」</div>
           </div>
           <div class="hud__right">
+            <div class="badge" id="badge-hp">HP：100/100</div>
+            <div class="badge" id="badge-coins">錢幣：0</div>
             <div class="badge" id="badge-gifts">禮物：0</div>
           </div>
         </section>
@@ -63,6 +65,22 @@
           </div>
         </aside>
 
+        <aside class="inventory" id="shop" aria-hidden="true" aria-label="商店">
+          <div class="inventory__header">
+            <div class="inventory__title">商店</div>
+            <button class="inventory__close" id="shop-close" type="button">關閉（Esc）</button>
+          </div>
+          <div class="inventory__body">
+            <div class="inventory__meta" id="shop-meta">帶著禮物來賣掉換錢吧。</div>
+            <ul class="inventory__list" id="shop-list"></ul>
+          </div>
+          <div class="inventory__footer">
+            <button class="btn" id="shop-sell-all" type="button" title="把背包禮物全部賣掉">
+              全部售出
+            </button>
+          </div>
+        </aside>
+
         <aside class="help" id="help" aria-hidden="true" aria-label="操作說明">
           <div class="help__header">
             <div class="help__title">操作說明</div>
@@ -72,6 +90,7 @@
             <ul class="help__list">
               <li><b>移動</b>：方向鍵（↑↓←→）</li>
               <li><b>互動</b>：靠近貓咪 NPC 後按 <b>空白鍵</b>（或 Enter）</li>
+              <li><b>商店</b>：靠近商店後按 <b>空白鍵</b> 可售出禮物換錢幣</li>
               <li><b>背包</b>：按 <b>I</b> 開關背包</li>
               <li><b>重置進度</b>：按 <b>Shift+R</b>（清空存檔並重新開始）</li>
               <li><b>關閉視窗</b>：按 <b>Esc</b></li>
