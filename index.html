@@ -17,7 +17,7 @@
           <span class="chip" id="chip-help">H：說明</span>
           <span class="chip" id="chip-inv">I：背包</span>
           <span class="chip" id="chip-interact">Space：互動</span>
-            <span class="chip" id="chip-reset">Shift+R：重置</span>
+          <span class="chip" id="chip-reset">Shift+R：重置</span>
         </div>
       </header>
 
@@ -27,7 +27,7 @@
         <section class="hud" aria-label="HUD">
           <div class="hud__left">
             <div class="badge" id="badge-location">地點：貓咪村莊</div>
-            <div class="badge" id="badge-hint">提示：靠近 NPC 會出現「可互動」</div>
+            <div class="badge" id="badge-hint">提示：靠近 NPC / 商店 會出現「可互動」</div>
           </div>
           <div class="hud__right">
             <div class="badge" id="badge-hp">HP：100/100</div>
@@ -106,6 +106,20 @@
         <span>做給你的小原型｜下一步可以加：任務、商店、房屋進出、事件觸發、更多地圖。</span>
       </footer>
     </div>
+
+    <section class="splash" id="splash" aria-hidden="false" aria-label="開始畫面">
+      <div class="splash__card" role="dialog" aria-modal="true" aria-label="遊戲開始">
+        <div class="splash__logo">
+          <div class="splash__logoMain">貓咪村莊 RPG</div>
+          <div class="splash__logoSub">在村莊裡移動、聊天、收集禮物，還要小心盜賊與凶狠貓。</div>
+        </div>
+        <div class="splash__actions" role="group" aria-label="開始選項">
+          <button class="btn splash__btnPrimary" id="start-game" type="button">開始遊戲</button>
+          <button class="inventory__close splash__btn" id="new-game" type="button">新遊戲（清空存檔）</button>
+        </div>
+        <div class="splash__hint">提示：開始後可按 H 查看操作說明。</div>
+      </div>
+    </section>
 
     <script src="./game.js"></script>
   </body>

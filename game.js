@@ -30,6 +30,9 @@
     shopList: document.getElementById("shop-list"),
     shopMeta: document.getElementById("shop-meta"),
     shopSellAll: document.getElementById("shop-sell-all"),
+    splash: document.getElementById("splash"),
+    startGame: document.getElementById("start-game"),
+    newGame: document.getElementById("new-game"),
     badgeHp: document.getElementById("badge-hp"),
     badgeCoins: document.getElementById("badge-coins"),
     badgeGifts: document.getElementById("badge-gifts"),
@@ -105,6 +108,8 @@
     keys.clear();
     window.location.reload();
   }
+
+  let gameStarted = false;
 
   function updateGiftBadge() {
     ui.badgeGifts.textContent = `禮物：${save.gifts.length}`;
@@ -335,6 +340,84 @@
     closeHelp();
   }
 
+  const INITIAL_PLAYER = {
+    x: 520,
+    y: 940,
+    facing: /** @type {"up"|"down"|"left"|"right"} */ ("down"),
+  };
+
+  /** @type {Map<string, {x:number;y:number}>} */
+  const npcSpawn = new Map();
+
+  /** @type {Map<string, {x:number;y:number}>} */
+  const mobSpawn = new Map();
+
+  function resetRuntimeState() {
+    player.x = INITIAL_PLAYER.x;
+    player.y = INITIAL_PLAYER.y;
+    player.facing = INITIAL_PLAYER.facing;
+    keys.clear();
+
+    // 重置 NPC 回到出生點
+    for (const npc of npcs) {
+      const p = npcSpawn.get(npc.id);
+      if (p) {
+        npc.x = p.x;
+        npc.y = p.y;
+      }
+    }
+    initNpcWander();
+
+    // 重置 mobs 回到出生點
+    for (const m of mobs) {
+      const p = mobSpawn.get(m.id);
+      if (p) {
+        m.x = p.x;
+        m.y = p.y;
+      }
+    }
+    initMobs();
+
+    hintOverrideUntil = 0;
+    hintOverrideText = "";
+    ui.badgeHint.textContent = DEFAULT_HINT;
+
+    hidePrompt();
+    closeDialogue();
+    closeOverlays();
+
+    camera.zoom = 1;
+    camera.vw = canvas.width;
+    camera.vh = canvas.height;
+    updateCameraZoom(0.001);
+    updateCamera();
+    render();
+  }
+
+  function startGame() {
+    if (gameStarted) return;
+    gameStarted = true;
+    setAriaHidden(ui.splash, true);
+
+    // 初始 UI（確保在開始前就已載入存檔）
+    updateGiftBadge();
+    updateStatsBadges();
+    ui.badgeHint.textContent = DEFAULT_HINT;
+
+    // 初始化遊戲內狀態
+    resetRuntimeState();
+
+    // 首次進來自動開說明（在真正開始後再打開）
+    const seen = localStorage.getItem(FIRST_VISIT_KEY) === "1";
+    if (!seen) {
+      localStorage.setItem(FIRST_VISIT_KEY, "1");
+      openHelp();
+    }
+
+    lastTs = performance.now();
+    requestAnimationFrame(step);
+  }
+
   /** Map 與世界座標 */
   const WORLD = {
     w: 1920,
@@ -485,6 +568,9 @@
     },
   ];
 
+  // 記錄 NPC 出生點（用於新遊戲/重置狀態）
+  for (const npc of npcs) npcSpawn.set(npc.id, { x: npc.x, y: npc.y });
+
   function rand(min, max) {
     return min + Math.random() * (max - min);
   }
@@ -627,6 +713,9 @@
       cooldown: 0,
     },
   ];
+
+  // 記錄 mobs 出生點（用於新遊戲/重置狀態）
+  for (const m of mobs) mobSpawn.set(m.id, { x: m.x, y: m.y });
 
   function initMobs() {
     for (const m of mobs) {
@@ -921,6 +1010,12 @@
     // 避免方向鍵捲動頁面
     if (k.startsWith("Arrow") || k === " " || k === "Enter") e.preventDefault();
 
+    // 尚未開始：只允許 Enter / Space 開始遊戲（點按鈕也可以）
+    if (!gameStarted) {
+      if (k === " " || k === "Enter") startGame();
+      return;
+    }
+
     if (k === "Escape") {
       if (dialogue.active) closeDialogue();
       else closeOverlays();
@@ -983,6 +1078,16 @@
 
   window.addEventListener("keyup", (e) => {
     keys.delete(e.key);
+  });
+
+  ui.startGame.addEventListener("click", () => startGame());
+  ui.newGame.addEventListener("click", () => {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(FIRST_VISIT_KEY);
+    save = loadSave();
+    updateGiftBadge();
+    updateStatsBadges();
+    startGame();
   });
 
   ui.inventoryClose.addEventListener("click", () => closeInventory());
@@ -1446,22 +1551,17 @@
     ctx.restore();
   }
 
-  // 初始 UI
+  // 初始 UI（先顯示開始畫面，按下開始才啟動遊戲）
   updateGiftBadge();
   updateStatsBadges();
+  ui.badgeHint.textContent = DEFAULT_HINT;
   hidePrompt();
   closeDialogue();
   closeOverlays();
+  setAriaHidden(ui.splash, false);
 
-  initNpcWander();
-  initMobs();
-
-  // 小提示：首次進來自動開說明
-  const seen = localStorage.getItem(FIRST_VISIT_KEY) === "1";
-  if (!seen) {
-    localStorage.setItem(FIRST_VISIT_KEY, "1");
-    openHelp();
-  }
-
-  requestAnimationFrame(step);
+  // 先畫第一幀（讓開始畫面背後不是空白）
+  updateCameraZoom(0.001);
+  updateCamera();
+  render();
 })();
